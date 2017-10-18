@@ -1,0 +1,19 @@
+{
+    "name": "leamasuero/sdk",
+    "description": "Cliente http para interactuar con mercado único.",
+    "authors": [
+        {
+            "name": "Leandro Masuero",
+            "email": "leandro.masuero@gmail.com"
+        }
+    ],
+    "require": {
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "classmap": [
+            "lib/mercadounico.php"
+        ]
+    }
+}
