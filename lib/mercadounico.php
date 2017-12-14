@@ -50,11 +50,18 @@ class MU
                 ->get('/session');
     }
 
-    public function crearPropriedad($datosPropiedad)
+    public function crearPropiedad($datosPropiedad)
     {
         return MURestClient::connect(self::API_BASE_URL)
                 ->auth($this->token)
                 ->post('/propiedades', $datosPropiedad);
+    }
+
+    public function editarPropiedad($id, $datosPropiedad)
+    {
+        return MURestClient::connect(self::API_BASE_URL)
+                ->auth($this->token)
+                ->patch("/propiedades/{$id}", $datosPropiedad);
     }
 }
 
@@ -67,6 +74,7 @@ class MURestClient
     const GET = 'GET';
     const PUT = 'PUT';
     const POST = 'POST';
+    const PATCH = 'PATCH';
     const DELETE = 'DELETE';
 
     /**
@@ -160,6 +168,19 @@ class MURestClient
         return $this->exec(self::POST, $path, $jsonData);
     }
 
+    public function patch($path, $data = array())
+    {
+        $jsonData = json_encode($data);
+
+        if (function_exists('json_last_error')) {
+            if (json_last_error() != JSON_ERROR_NONE) {
+                throw new JsonErrorException(json_last_error(), $data);
+            }
+        }
+
+        return $this->exec(self::PATCH, $path, $jsonData);
+    }
+
     private function buildRequest($method, $path, $data = array())
     {
         $connect = curl_init();
@@ -173,6 +194,7 @@ class MURestClient
 
         switch ($method) {
             case self::POST:
+            case self::PATCH:
                 curl_setopt($connect, CURLOPT_POSTFIELDS, $data);
                 break;
         }
@@ -251,7 +273,8 @@ class MUErrorResponseException extends MUException
     public function __construct($errorResponse, $httpStatusCode)
     {
         $this->errorResponse = $errorResponse;
-        parent::__construct($errorResponse['message'], $httpStatusCode);
+        $message = isset($errorResponse['message']) ? $errorResponse['message'] : '';
+        parent::__construct($message, $httpStatusCode);
     }
 
     public function getErrorResponse()
