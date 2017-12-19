@@ -59,9 +59,24 @@ class MU
 
     public function editarPropiedad($id, $datosPropiedad)
     {
+        if(!$id) {
+            throw new MUErrorRequestException("Debe indicar el id de la propiedad que desea operar.");
+        }
+
         return MURestClient::connect(self::API_BASE_URL)
                 ->auth($this->token)
                 ->patch("/propiedades/{$id}", $datosPropiedad);
+    }
+
+    public function eliminarPropiedad($id)
+    {
+        if(!$id) {
+            throw new MUErrorRequestException("Debe indicar el id de la propiedad que desea operar.");
+        }
+
+        return MURestClient::connect(self::API_BASE_URL)
+                ->auth($this->token)
+                ->delete("/propiedades/{$id}");
     }
 }
 
@@ -137,7 +152,7 @@ class MURestClient
     }
 
     /**
-     * 
+     *
      * @return array
      */
     private function getHttpHeaders()
@@ -180,6 +195,12 @@ class MURestClient
 
         return $this->exec(self::PATCH, $path, $jsonData);
     }
+
+    public function delete($path, $data = array())
+    {
+        return $this->exec(self::DELETE, $path, $data);
+    }
+
 
     private function buildRequest($method, $path, $data = array())
     {
@@ -262,6 +283,10 @@ class JsonErrorException extends MUException
     }
 }
 
+class MUErrorRequestException extends MUException
+{
+
+}
 class MUErrorResponseException extends MUException
 {
 
@@ -287,12 +312,12 @@ class MUResponse extends Response
 {
 
     /**
-     * @var array 
+     * @var array
      */
     private $body;
 
     /**
-     * @var int 
+     * @var int
      */
     private $httpStatusCode;
 
