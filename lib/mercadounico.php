@@ -59,7 +59,7 @@ class MU
 
     public function editarPropiedad($id, $datosPropiedad)
     {
-        if(!$id) {
+        if (!$id) {
             throw new MUErrorRequestException("Debe indicar el id de la propiedad que desea operar.");
         }
 
@@ -70,7 +70,7 @@ class MU
 
     public function eliminarPropiedad($id)
     {
-        if(!$id) {
+        if (!$id) {
             throw new MUErrorRequestException("Debe indicar el id de la propiedad que desea operar.");
         }
 
@@ -201,7 +201,6 @@ class MURestClient
         return $this->exec(self::DELETE, $path, $data);
     }
 
-
     private function buildRequest($method, $path, $data = array())
     {
         $connect = curl_init();
@@ -249,9 +248,27 @@ class MURestClient
 class MUException extends Exception
 {
 
+    /**
+     * @var array
+     */
+    private $data;
+
     public function __construct($message, $code = 500, Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    public function setData($data)
+    {
+        $this->data = $data;
     }
 }
 
@@ -260,26 +277,16 @@ class JsonErrorException extends MUException
 
     private $jsonError;
 
-    /**
-     * @var array
-     */
-    private $data;
-
     public function __construct($jsonError, $data)
     {
-        $this->jsonError = $jsonError;
-        $this->data = $data;
         parent::__construct("Json error", Response::HTTP_BAD_REQUEST);
+        $this->jsonError = $jsonError;
+        $this->setData($data);
     }
 
     public function getJsonError()
     {
         return $this->jsonError;
-    }
-
-    public function getData()
-    {
-        return $this->data;
     }
 }
 
@@ -287,24 +294,15 @@ class MUErrorRequestException extends MUException
 {
 
 }
+
 class MUErrorResponseException extends MUException
 {
 
-    /**
-     * @var array
-     */
-    private $errorResponse;
-
     public function __construct($errorResponse, $httpStatusCode)
     {
-        $this->errorResponse = $errorResponse;
         $message = isset($errorResponse['message']) ? $errorResponse['message'] : '';
         parent::__construct($message, $httpStatusCode);
-    }
-
-    public function getErrorResponse()
-    {
-        return $this->errorResponse;
+        $this->setData($errorResponse);
     }
 }
 
