@@ -253,9 +253,9 @@ class MUException extends Exception
      */
     private $data;
 
-    public function __construct($message, $code = 500, Exception $previous = null)
+    public function __construct($message, $code = 500)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code);
     }
 
     /**
