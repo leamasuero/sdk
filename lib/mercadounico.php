@@ -26,8 +26,12 @@ class MU
     {
         $this->username = $username;
         $this->password = $password;
+    }
 
-        $this->token = $this->getAccessToken($username, $password);
+    public function connect()
+    {
+        $this->token = $this->getAccessToken($this->username, $this->password);
+        return $this;
     }
 
     private function getAccessToken($username, $password)
@@ -36,11 +40,11 @@ class MU
             return $this->token;
         }
 
-        $reponse = MURestClient::connect(self::AUTH_BASE_URL)
+        $response = MURestClient::connect(self::AUTH_BASE_URL)
             ->auth(base64_encode($username . ':' . $password), 'Basic')
             ->post('/session');
 
-        return $reponse->token;
+        return $response->token;
     }
 
     public function getSession()
