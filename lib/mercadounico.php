@@ -4,8 +4,8 @@ class MU
 {
 
     const VERSION = "1.0.0";
-    const AUTH_BASE_URL = "https://auth.mercado-unico.com.info";
-    const API_BASE_URL = "https://api.mercado-unico.com.info";
+    const AUTH_BASE_URL = "https://auth.mercado-unico.com";
+    const API_BASE_URL = "https://api.mercado-unico.com";
     const SANDBOX_AUTH_BASE_URL = "https://auth.prop44.info";
     const SANDBOX_API_BASE_URL = "https://api.prop44.info";
 
