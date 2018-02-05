@@ -4,8 +4,10 @@ class MU
 {
 
     const VERSION = "1.0.0";
-    const AUTH_BASE_URL = "https://auth.prop44.info";
-    const API_BASE_URL = "https://api.prop44.info";
+    const AUTH_BASE_URL = "https://auth.mercado-unico.com.info";
+    const API_BASE_URL = "https://api.mercado-unico.com.info";
+    const SANDBOX_AUTH_BASE_URL = "https://auth.prop44.info";
+    const SANDBOX_API_BASE_URL = "https://api.prop44.info";
 
     /**
      * @var string
@@ -22,10 +24,16 @@ class MU
      */
     private $password;
 
-    function __construct($username, $password)
+    /**
+     * @var bool
+     */
+    private $sandboxMode;
+
+    function __construct($username, $password, $sandboxMode = false)
     {
         $this->username = $username;
         $this->password = $password;
+        $this->sandboxMode = $sandboxMode;
     }
 
     public function connect()
@@ -34,13 +42,23 @@ class MU
         return $this;
     }
 
+    private function getAuthBaseUrl()
+    {
+        return $this->sandboxMode ? self::SANDBOX_AUTH_BASE_URL : self::AUTH_BASE_URL;
+    }
+
+    private function getApiBaseUrl()
+    {
+        return $this->sandboxMode ? self::SANDBOX_API_BASE_URL : self::API_BASE_URL;
+    }
+
     private function getAccessToken($username, $password)
     {
         if (isset($this->token) && !is_null($this->token)) {
             return $this->token;
         }
 
-        $response = MURestClient::connect(self::AUTH_BASE_URL)
+        $response = MURestClient::connect($this->getAuthBaseUrl())
             ->auth(base64_encode($username . ':' . $password), 'Basic')
             ->post('/session');
 
@@ -49,14 +67,14 @@ class MU
 
     public function getSession()
     {
-        return MURestClient::connect(self::AUTH_BASE_URL)
+        return MURestClient::connect($this->getAuthBaseUrl())
                 ->auth($this->token)
                 ->get('/session');
     }
 
     public function crearPropiedad($datosPropiedad)
     {
-        return MURestClient::connect(self::API_BASE_URL)
+        return MURestClient::connect($this->getApiBaseUrl())
                 ->auth($this->token)
                 ->post('/propiedades', $datosPropiedad);
     }
@@ -67,7 +85,7 @@ class MU
             throw new MUErrorRequestException("Debe indicar el id de la propiedad que desea operar.");
         }
 
-        return MURestClient::connect(self::API_BASE_URL)
+        return MURestClient::connect($this->getApiBaseUrl())
                 ->auth($this->token)
                 ->patch("/propiedades/{$id}", $datosPropiedad);
     }
@@ -78,7 +96,7 @@ class MU
             throw new MUErrorRequestException("Debe indicar el id de la propiedad que desea operar.");
         }
 
-        return MURestClient::connect(self::API_BASE_URL)
+        return MURestClient::connect($this->getApiBaseUrl())
                 ->auth($this->token)
                 ->delete("/propiedades/{$id}");
     }
