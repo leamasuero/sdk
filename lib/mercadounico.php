@@ -4,9 +4,7 @@ class MU
 {
 
     const VERSION = "1.0.0";
-    const AUTH_BASE_URL = "https://auth.mercado-unico.com";
     const API_BASE_URL = "https://api.mercado-unico.com";
-    const SANDBOX_AUTH_BASE_URL = "https://auth.prop44.info";
     const SANDBOX_API_BASE_URL = "https://api.prop44.info";
 
     /**
@@ -42,11 +40,6 @@ class MU
         return $this;
     }
 
-    private function getAuthBaseUrl()
-    {
-        return $this->sandboxMode ? self::SANDBOX_AUTH_BASE_URL : self::AUTH_BASE_URL;
-    }
-
     private function getApiBaseUrl()
     {
         return $this->sandboxMode ? self::SANDBOX_API_BASE_URL : self::API_BASE_URL;
@@ -54,22 +47,7 @@ class MU
 
     private function getAccessToken($username, $password)
     {
-        if (isset($this->token) && !is_null($this->token)) {
-            return $this->token;
-        }
-
-        $response = MURestClient::connect($this->getAuthBaseUrl())
-            ->auth(base64_encode($username . ':' . $password), 'Basic')
-            ->post('/session');
-
-        return $response->token;
-    }
-
-    public function getSession()
-    {
-        return MURestClient::connect($this->getAuthBaseUrl())
-                ->auth($this->token)
-                ->get('/session');
+        return base64_encode($username . ':' . $password);
     }
 
     public function crearPropiedad($datosPropiedad)
@@ -153,7 +131,7 @@ class MURestClient
         );
     }
 
-    public function auth($token, $type = 'Bearer')
+    public function auth($token, $type = 'Basic')
     {
         $this->setHeaders(array('Authorization' => "{$type} {$token}"));
         return $this;
