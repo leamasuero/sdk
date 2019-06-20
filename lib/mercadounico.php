@@ -50,6 +50,13 @@ class MU
         return base64_encode($username . ':' . $password);
     }
 
+    public function getPropiedad($id)
+    {
+        return MURestClient::connect($this->getApiBaseUrl())
+            ->auth($this->token)
+            ->get("/propiedades/{$id}");
+    }
+
     public function crearPropiedad($datosPropiedad)
     {
         return MURestClient::connect($this->getApiBaseUrl())
